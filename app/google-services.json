@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "677935479391",
+    "firebase_url": "https://aimessage-b2502.firebaseio.com",
+    "project_id": "aimessage-b2502",
+    "storage_bucket": "aimessage-b2502.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677935479391:android:50dbb9f0302b6725",
+        "android_client_info": {
+          "package_name": "com.sealstudios.aimessage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "677935479391-sca3vjep34io1j4t30i3u9m8tof6aj7o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1XISa2Hb4VPdVwxtGwl9tbsCDfpHCFx4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

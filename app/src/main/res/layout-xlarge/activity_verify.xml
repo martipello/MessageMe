@@ -1,0 +1,129 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fillViewport="true"
+    android:layout_width="match_parent"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:id="@+id/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/background_image" />
+
+        <com.github.florent37.shapeofview.shapes.CircleView
+            android:layout_width="@dimen/logo_image_size_x_large"
+            android:layout_height="@dimen/logo_image_size_x_large"
+            android:id="@+id/icon"
+            app:shape_circle_borderColor="@color/colorPrimary"
+            app:shape_circle_borderWidth="2dp"
+            android:layout_marginTop="@dimen/icon_top_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/title_text">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"/>
+
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/logo_concept_high_res"
+                android:padding="12dp"
+                android:contentDescription="@string/logo_image" />
+
+        </com.github.florent37.shapeofview.shapes.CircleView>
+
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_horizontal_margin_x_large"
+        android:text="@string/app_pseudo_name"
+        android:theme="@style/ThemeOverlay.MyTitleText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/icon" />
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/phone_number_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_horizontal_margin_x_large"
+        android:minWidth="400dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_text">
+
+
+        <EditText
+            android:id="@+id/field_verification_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_verification_code"
+            android:textSize="@dimen/text_size_x_large"
+            android:inputType="number" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+        <com.rilixtech.materialfancybutton.MaterialFancyButton
+            android:id="@+id/button_verify_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:minWidth="400dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/phone_number_container"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginStart="@dimen/fab_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin_x_large"
+            fancy:mfb_borderColor="@color/colorAccent"
+            fancy:mfb_textSize="@dimen/text_size_x_large"
+            fancy:mfb_borderWidth="1dp"
+            fancy:mfb_defaultColor="@color/colorAccent"
+            fancy:mfb_focusColor="#7ab800"
+            fancy:mfb_radius="30dp"
+            fancy:mfb_text="GET STARTED"
+            fancy:mfb_textColor="#FFFFFF" />
+
+    <Button
+        android:id="@+id/btn_reset_password"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dip"
+        android:background="@null"
+        android:text="@string/resend_phone_auth"
+        android:textSize="@dimen/text_size_large"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_verify_phone" />
+
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

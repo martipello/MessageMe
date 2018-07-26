@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/holder"
+    android:background="#66FFFFFF"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="5dp"
+        android:id="@+id/contact_image"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:id="@+id/contact_name"
+        android:textStyle="bold"
+        android:gravity="center_vertical"
+        android:layout_marginTop="5dp"
+        android:paddingStart="15dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"
+        app:layout_constraintBottom_toTopOf="@id/contact_status"
+        app:layout_constraintStart_toEndOf="@id/contact_image"
+        app:layout_constraintEnd_toStartOf="@id/unread_holder"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/contact_status"
+        android:gravity="center_vertical"
+        android:paddingStart="15dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/contact_image"
+        app:layout_constraintEnd_toStartOf="@id/message_time"
+        app:layout_constraintTop_toBottomOf="@id/contact_name"
+        />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/message_time"
+        android:gravity="center_vertical|end"
+        android:paddingStart="15dp"
+        android:textSize="12sp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/contact_status"
+        app:layout_constraintEnd_toStartOf="@id/unread_holder"
+        app:layout_constraintTop_toBottomOf="@id/contact_name"
+        />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/unread_holder"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:layout_margin="5dp"
+        app:layout_constraintStart_toEndOf="@id/message_time"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="@drawable/circle_green"
+            android:id="@+id/unread_count_badge"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/unread_count_text"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+
+</android.support.constraint.ConstraintLayout>

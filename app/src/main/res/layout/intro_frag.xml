@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/backgroundImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/background_image" />
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/phone_number_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="300dp"
+        android:paddingTop="@dimen/custom_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shape_of_view">
+
+        <com.vanniktech.emoji.EmojiEditText
+            android:id="@+id/field_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/profile_name_hint"
+            android:inputType="textPersonName" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/status_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="300dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/phone_number_container">
+
+        <com.vanniktech.emoji.EmojiEditText
+            android:id="@+id/status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/profile_status_hint"
+            android:inputType="textPersonName" />
+
+    </android.support.design.widget.TextInputLayout>
+
+            <com.rilixtech.materialfancybutton.MaterialFancyButton
+                android:id="@+id/button_start_verification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="300dp"
+                android:layout_gravity="center"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/status_container"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginTop="20dp"
+                fancy:mfb_borderColor="@color/colorAccent"
+                fancy:mfb_borderWidth="1dp"
+                fancy:mfb_defaultColor="@color/colorAccent"
+                fancy:mfb_focusColor="#7ab800"
+                fancy:mfb_radius="30dp"
+                fancy:mfb_text="GET STARTED"
+                fancy:mfb_textColor="#FFFFFF" />
+
+
+        <com.github.florent37.shapeofview.shapes.ArcView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:id="@+id/shape_of_view"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:shape_arc_cropDirection="outside"
+            app:shape_arc_height="28dp"
+            app:shape_arc_position="bottom">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <net.grobas.view.MovingImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/mail_pattern"
+                    app:miv_load_on_create="true"
+                    app:miv_max_relative_size="3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:miv_min_relative_offset="0.2"
+                    app:miv_start_delay="1000"
+                    app:miv_repetitions="-1"
+                    app:miv_speed="100" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/contact_preview_profile"
+                    android:textSize="16sp"
+                    android:textColor="@color/grey"
+                    android:layout_margin="@dimen/fab_margin"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:id="@+id/profile_text"/>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/icon"
+                    android:layout_width="@dimen/profile_image_size"
+                    android:layout_height="@dimen/profile_image_size"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/profile_text"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:src="@drawable/contact_placeholder"
+                    android:layout_marginBottom="@dimen/fab_margin"
+                    app:civ_border_width="2dp"
+                    app:civ_border_color="#FFFFFF"/>
+
+                <ImageView
+                    android:id="@+id/camera_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tag="default"
+                    android:contentDescription="@string/select_profile_image"
+                    app:layout_constraintStart_toStartOf="@id/icon"
+                    app:layout_constraintBottom_toBottomOf="@id/icon"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:src="@drawable/ic_photo_camera_black_24dp" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </com.github.florent37.shapeofview.shapes.ArcView>
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

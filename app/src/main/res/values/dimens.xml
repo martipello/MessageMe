@@ -1,0 +1,50 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="big_fab_margin">74dp</dimen>
+    <dimen name="custom_margin" >8dp</dimen>
+
+    <dimen name="icon_top_margin">24dp</dimen>
+    <dimen name="title_bottom_margin">16dp</dimen>
+
+    <dimen name="emoji_size_default">20sp</dimen>
+    <dimen name="emoji_size_only_emojis">40sp</dimen>
+    <dimen name="emoji_size_single_emoji">60sp</dimen>
+
+    <dimen name="profile_image_size">146dp</dimen>
+
+    <!-- large dimens -->
+
+    <dimen name="fab_margin_large">16dp</dimen>
+
+    <dimen name="activity_horizontal_margin_large">24dp</dimen>
+    <dimen name="activity_vertical_margin_large">24dp</dimen>
+
+    <dimen name="title_bottom_margin_large">24dp</dimen>
+
+    <dimen name="profile_image_size_large">219dp</dimen>
+    <dimen name="logo_image_size_large">150dp</dimen>
+
+    <dimen name="title_text_size_large">24sp</dimen>
+    <dimen name="text_size_large">21sp</dimen>
+
+    <!-- x large dimens -->
+
+    <dimen name="activity_horizontal_margin_x_large">32dp</dimen>
+    <dimen name="activity_vertical_margin_x_large">32dp</dimen>
+
+    <dimen name="title_bottom_margin_x_large">32dp</dimen>
+
+    <dimen name="profile_image_size_x_large">292dp</dimen>
+    <dimen name="logo_image_size_x_large">200dp</dimen>
+
+    <dimen name="title_text_size_x_large">32sp</dimen>
+    <dimen name="text_size_x_large">28sp</dimen>
+
+    /*
+    normal * 0.75 - ldpi (small) //mdpi dimens *0.75
+    1.0 - mdpi (normal)
+    normal * 1.5 - hdpi (large) //mdpi dimens *1.5
+    normal * 2.0 - xhdpi (xLarge) //mdpi dimens *2.0
+    */
+
+</resources>
