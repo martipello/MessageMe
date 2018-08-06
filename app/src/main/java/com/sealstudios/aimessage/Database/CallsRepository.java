@@ -64,6 +64,10 @@ public class CallsRepository {
         return databaseCallsDao.loadCallsWithImages();
     }
 
+    public LiveData<List<CallObject>> getCallsWithImageByName(String name) {
+        return databaseCallsDao.loadCallsWithImagesByName(name);
+    }
+
     public void deleteCall(DatabaseCalls databaseCalls) {
         new deleteAsyncTask(databaseCallsDao).execute(databaseCalls);
     }

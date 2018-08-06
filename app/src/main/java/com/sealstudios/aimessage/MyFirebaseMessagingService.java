@@ -4,9 +4,8 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.BroadcastReceiver;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,30 +13,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import android.view.View;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.sealstudios.aimessage.Database.DatabaseContacts;
 import com.sealstudios.aimessage.Database.DatabaseMessage;
-import com.sealstudios.aimessage.Database.LiveDatabaseBuilder;
-import com.sealstudios.aimessage.Database.LiveDatabaseMessagesDao;
-import com.sealstudios.aimessage.Database.LiveDbOpenHelper;
 import com.sealstudios.aimessage.Database.MessageRepository;
 import com.sealstudios.aimessage.Utils.Constants;
-import com.sealstudios.aimessage.ViewModels.ContactsViewModel;
-import com.sealstudios.aimessage.ViewModels.MessagesViewModel;
+import com.sealstudios.aimessage.Widget.MessageMeAppWidget;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -45,17 +34,11 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -116,20 +99,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             } catch (ParseException pe) {
                 pe.printStackTrace();
             }
-            /*
-            DatabaseMessage message = new DatabaseMessage();
-            message.setMessage(data.get(Constants.MSG_TEXT));
-            message.setSenderName(data.get(Constants.MSG_SENDER_NAME));
-            message.setSenderId(data.get(Constants.MSG_SENDER));
-            message.setData_url(data.get(Constants.MSG_DATA_URL));
-            message.setData_type(data.get(Constants.MSG_DATA_TYPE));
-            message.setMessageId(data.get(Constants.MSG_ID));
-            message.setTime_stamp(date);
-            message.setRecipientName(data.get(Constants.MSG_RECIPIENT_NAME));
-            message.setRecipientId(data.get(Constants.MSG_RECIPIENT));
-            message.setSent_received(1);
-            messageRepository.insertMessage(message);
-            */
             if (data.size() > 0) {
                 if (data.get(Constants.MSG_DATA_TYPE).equals(Constants.DATA_TYPE_CALL) && !data.get(Constants.MSG_TEXT).equals(Constants.CALL_MISSED)){
                     //don't notify for any calls other than missed calls and only if we aren't already talking to the caller
@@ -154,6 +123,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         message.setSent_received(1);
                         messageRepository.insertMessage(message);
                         sendNotification(data, message);
+                        Log.d(MYTAG, "message " + message.toString());
                     }
                 }
             }
@@ -217,6 +187,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationCompat.Builder notificationBuilder = getNotificationOreo(message, shortBody, SINGLE_CHANNEL_ID, pendingIntent, profileImage);
             getManager().notify(notificationId, notificationBuilder.build());
         }
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this.getApplicationContext());
+        Intent widgetIntent = new Intent(this.getApplicationContext(), MessageMeAppWidget.class);
+        widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(this.getApplication(),MessageMeAppWidget.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(ids,R.id.widget_list);
+        //intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        //sendBroadcast(intent);
+        for (int id : ids){
+            MessageMeAppWidget.updateAppWidget(this.getApplicationContext(),appWidgetManager,id);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -277,7 +257,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } else if (message.getData_type().equals(Constants.DATA_TYPE_TEXT)) {
 
             NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle(message.getRecipientName());
-            messagingStyle.setConversationTitle(getSmsTodayYestFromMilli(message.getTime_stamp().getTime()));
+            messagingStyle.setConversationTitle(getDateAndTime(message.getTime_stamp().getTime()));
             if (messages != null) {
                 Log.d(MYTAG, "list size " + messages.size());
                 for (DatabaseMessage databaseMessage : messages) {
@@ -356,7 +336,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } else if (message.getData_type().equals(Constants.DATA_TYPE_TEXT)) {
 
             NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle(message.getRecipientName());
-            messagingStyle.setConversationTitle(getSmsTodayYestFromMilli(message.getTime_stamp().getTime()));
+            messagingStyle.setConversationTitle(getDateAndTime(message.getTime_stamp().getTime()));
             if (messages != null) {
                 Log.d(MYTAG, "list size " + messages.size());
                 for (DatabaseMessage databaseMessage : messages) {
@@ -487,7 +467,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
-    private String getSmsTodayYestFromMilli(long msgTimeMillis) {
+    private String getDateAndTime(long msgTimeMillis) {
 
         Calendar messageTime = Calendar.getInstance();
         messageTime.setTimeInMillis(msgTimeMillis);
@@ -530,279 +510,4 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
 
-     /*
-     //static methods for alternative messaging design
-
-    public static NotificationManager getManager(Context context) {
-        if (mManager == null) {
-            mManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        }
-        return mManager;
-    }
-
-    public static void sendNotification(Context context, DatabaseMessage message, String profileImage) {
-
-        String shortBody;
-        Intent intent;
-        PendingIntent pendingIntent;
-
-        if (MessageListActivity.isActive) {
-            intent = new Intent(context, MainActivity.class);
-            pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        } else {
-            intent = new Intent(context, MessageListActivity.class);
-            Bundle b = new Bundle();
-            b.putString(Constants.FS_NAME, message.getSenderName());
-            b.putString(Constants.FS_ID, message.getSenderId());
-            intent.putExtras(b);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-            stackBuilder.addParentStack(MainActivity.class);
-            stackBuilder.addNextIntent(intent);
-            pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        }
-        if (message.getMessage().length() > NOTIFICATION_MAX_CHARACTERS) {
-            shortBody = message.getMessage().substring(0, NOTIFICATION_MAX_CHARACTERS) + "\u2026";
-        } else {
-            shortBody = message.getMessage();
-        }
-
-        int notificationId = createIdFromId(message.getSenderId());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            NotificationCompat.Builder notificationBuilder = getNotificationDefault(context,message, shortBody, pendingIntent, profileImage);
-            getManager(context).notify(NOTIFICATION_ID, notificationBuilder.build());
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            NotificationCompat.Builder notificationBuilder = getNotificationNougat(context,message, shortBody, pendingIntent, profileImage);
-            getManager(context).notify(notificationId, notificationBuilder.build());
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationCompat.Builder notificationBuilder = getNotificationOreo(context,message, shortBody, SINGLE_CHANNEL_ID, pendingIntent, profileImage);
-            getManager(context).notify(NOTIFICATION_ID, notificationBuilder.build());
-        }
-    }
-
-    private static Bitmap getBitmapfromUrl(String imageUrl) {
-        try {
-            URL url = new URL(imageUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            return BitmapFactory.decodeStream(input);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static NotificationCompat.Builder getNotificationOreo(Context context, DatabaseMessage message, String shortBody, String channelId, PendingIntent pendingIntent, String profileImage) {
-
-        Intent intent;
-        PendingIntent replyPendingIntent;
-        Bitmap profileBitmap;
-
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.MSG_SENDER_NAME, message.getSenderName());
-        bundle.putString(Constants.MSG_SENDER, message.getSenderId());
-        bundle.putString(Constants.MSG_RECIPIENT_NAME, message.getRecipientName());
-        bundle.putString(Constants.MSG_RECIPIENT, message.getRecipientId());
-
-        String replyLabel = context.getString(R.string.notif_action_reply);
-        intent = new Intent(context, ReplyReceiver.class);
-        intent.putExtras(bundle);
-        replyPendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        RemoteInput remoteInput = new RemoteInput.Builder(NOTIFICATION_REPLY).setLabel(replyLabel).build();
-        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_send_white_24dp,
-                context.getString(R.string.reply), replyPendingIntent)
-                .addRemoteInput(remoteInput)
-                .setAllowGeneratedReplies(true)
-                .build();
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        if (!profileImage.isEmpty()) {
-            profileBitmap = getBitmapfromUrl(profileImage);
-        } else {
-            profileBitmap = BitmapFactory.decodeResource(context.getResources(),
-                    R.drawable.message_me_notification_blue);
-        }
-
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
-        notificationBuilder
-                .setContentTitle(String.format(context.getString(R.string.notification_message), message.getSenderName()))
-                .setSmallIcon(R.drawable.message_me_notification_blue)
-                .setLargeIcon(profileBitmap)
-                .setContentText(shortBody)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setColor(context.getResources().getColor(R.color.colorPrimary))
-                .setAutoCancel(true)
-                .setChannelId(channelId)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent)
-                .addAction(action);
-
-        if (message.getData_type().equals(Constants.DATA_TYPE_IMAGE)) {
-            Bitmap sentBitmap = getBitmapfromUrl(message.getData_url());
-            notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle()
-                    .setSummaryText(context.getString(R.string.new_picture))
-                    .bigPicture(sentBitmap));
-            return notificationBuilder;
-
-        } else if (message.getData_type().equals(Constants.DATA_TYPE_TEXT)) {
-
-            NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle(message.getRecipientName());
-            messagingStyle.setConversationTitle(getSmsTodayYestFromMilli(message.getTime_stamp().getTime()));
-            for (DatabaseMessage databaseMessage : messages) {
-                NotificationCompat.MessagingStyle.Message notificationMessage = new NotificationCompat.MessagingStyle.Message(
-                        databaseMessage.getMessage(), databaseMessage.getTime_stamp().getTime(), databaseMessage.getRecipientName()
-                );
-                messagingStyle.addMessage(notificationMessage);
-            }
-            notificationBuilder.setStyle(messagingStyle);
-            return notificationBuilder;
-        }
-
-        return notificationBuilder;
-
-    }
-
-    public static NotificationCompat.Builder getNotificationNougat(Context context,DatabaseMessage message, String shortBody, PendingIntent pendingIntent, String profileImage) {
-
-        Intent intent;
-        PendingIntent replyPendingIntent;
-        Bitmap profileBitmap;
-
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.MSG_SENDER_NAME, message.getSenderName());
-        bundle.putString(Constants.MSG_SENDER, message.getSenderId());
-        bundle.putString(Constants.MSG_RECIPIENT_NAME, message.getRecipientName());
-        bundle.putString(Constants.MSG_RECIPIENT, message.getRecipientId());
-
-        String replyLabel = context.getString(R.string.notif_action_reply);
-        intent = new Intent(context, ReplyReceiver.class);
-        intent.putExtras(bundle);
-        replyPendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        RemoteInput remoteInput = new RemoteInput.Builder(NOTIFICATION_REPLY).setLabel(replyLabel).build();
-        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_send_white_24dp,
-        context.getString(R.string.reply), replyPendingIntent)
-                .addRemoteInput(remoteInput)
-                .setAllowGeneratedReplies(true)
-                .build();
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        if (!profileImage.isEmpty()) {
-            profileBitmap = getBitmapfromUrl(profileImage);
-        } else {
-            profileBitmap = BitmapFactory.decodeResource(context.getResources(),
-                    R.drawable.message_me_notification_blue);
-        }
-
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
-        notificationBuilder
-                .setContentTitle(String.format(context.getString(R.string.notification_message), message.getSenderName()))
-                .setSmallIcon(R.drawable.message_me_notification_blue)
-                .setLargeIcon(profileBitmap)
-                .setContentText(shortBody)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setColor(context.getResources().getColor(R.color.colorPrimary))
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent)
-                .addAction(action);
-
-        if (message.getData_type().equals(Constants.DATA_TYPE_IMAGE)) {
-            Bitmap sentBitmap = getBitmapfromUrl(message.getData_url());
-            notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle()
-                    .setSummaryText(context.getString(R.string.new_picture))
-                    .bigPicture(sentBitmap));
-            return notificationBuilder;
-
-        } else if (message.getData_type().equals(Constants.DATA_TYPE_TEXT)) {
-
-            NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle(message.getRecipientName());
-            messagingStyle.setConversationTitle(getSmsTodayYestFromMilli(message.getTime_stamp().getTime()));
-                for (DatabaseMessage databaseMessage : messages) {
-                    NotificationCompat.MessagingStyle.Message notificationMessage = new NotificationCompat.MessagingStyle.Message(
-                            databaseMessage.getMessage(), databaseMessage.getTime_stamp().getTime(), databaseMessage.getRecipientName()
-                    );
-                    messagingStyle.addMessage(notificationMessage);
-                }
-
-            notificationBuilder.setStyle(messagingStyle);
-            return notificationBuilder;
-        }
-        return notificationBuilder;
-
-    }
-
-    public static NotificationCompat.Builder getNotificationDefault(Context context , DatabaseMessage message, String shortBody, PendingIntent pendingIntent, String profileImage) {
-
-        Intent intent;
-        PendingIntent replyPendingIntent;
-        Bitmap profileBitmap;
-
-        if (MessageListActivity.isActive) {
-            intent = new Intent(context, MainActivity.class);
-            replyPendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        } else {
-            intent = new Intent(context, MessageListActivity.class);
-            Bundle b = new Bundle();
-            b.putString(Constants.FS_NAME, message.getSenderName());
-            b.putString(Constants.FS_ID, message.getSenderId());
-            intent.putExtras(b);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-            stackBuilder.addParentStack(MainActivity.class);
-            stackBuilder.addNextIntent(intent);
-            replyPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-            //replyPendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        }
-
-        String replyLabel = context.getString(R.string.notif_action_reply);
-        RemoteInput remoteInput = new RemoteInput.Builder(NOTIFICATION_REPLY).setLabel(replyLabel).build();
-        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_send_white_24dp,
-                context.getString(R.string.reply), replyPendingIntent)
-                .addRemoteInput(remoteInput)
-                .setAllowGeneratedReplies(true)
-                .build();
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        if (!profileImage.isEmpty()) {
-            profileBitmap = getBitmapfromUrl(profileImage);
-        } else {
-            profileBitmap = BitmapFactory.decodeResource(context.getResources(),
-                    R.drawable.message_me_notification_wb);
-        }
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
-        notificationBuilder
-                .setContentTitle(String.format(context.getString(R.string.notification_message), message.getSenderName()))
-                .setSmallIcon(R.drawable.message_me_notification)
-                .setLargeIcon(profileBitmap)
-                .setContentText(shortBody)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setColor(context.getResources().getColor(R.color.colorPrimary))
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent)
-                .addAction(action);
-
-        if (message.getData_type().equals(Constants.DATA_TYPE_IMAGE)) {
-            Bitmap sentBitmap = getBitmapfromUrl(message.getData_url());
-            notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle()
-                    .setSummaryText(context.getString(R.string.new_picture) + " from " + message.getSenderName())
-                    .bigPicture(sentBitmap));
-            return notificationBuilder;
-
-        } else if (message.getData_type().equals(Constants.DATA_TYPE_TEXT)) {
-            notificationBuilder
-                    .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText(message.getMessage())
-                            .setSummaryText(context.getString(R.string.new_message)));
-            return notificationBuilder;
-        }
-        return notificationBuilder;
-    }
-    */
 }

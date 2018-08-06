@@ -78,19 +78,15 @@
             android:name=".PreviewImageActivity"
             android:label="@string/app_name"
             android:parentActivityName=".MessageListActivity" />
-
         <activity
             android:name=".VideoChatActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".IncomingCallActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".MessageListActivity"
-            android:parentActivityName=".MainActivity">
-
-        </activity>
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".NotificationActivity"
             android:parentActivityName=".MainActivity">
@@ -106,9 +102,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/generic_file_paths">
-
-            </meta-data>
+                android:resource="@xml/generic_file_paths"/>
         </provider>
 
         <service android:name=".MyFirebaseMessagingService">
@@ -120,9 +114,21 @@
         <receiver
             android:name=".ReplyReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"/>
 
+        <receiver android:name="com.sealstudios.aimessage.Widget.MessageMeAppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/message_me_app_widget_info" />
         </receiver>
+
+        <service android:name=".Widget.MessagingService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
     </application>
 
 </manifest>

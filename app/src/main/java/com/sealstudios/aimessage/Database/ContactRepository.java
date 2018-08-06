@@ -162,6 +162,17 @@ public class ContactRepository {
         return databaseContactsDao.findByName(name);
     }
 
+    public List<DatabaseContacts> getAllWithUnread() {
+        try {
+            return new returnUnreadContact(databaseContactsDao).execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void deleteContact(DatabaseContacts databaseUser) {
         new deleteAsyncTask(databaseContactsDao).execute(databaseUser);
     }
@@ -308,6 +319,20 @@ public class ContactRepository {
         @Override
         protected DatabaseContacts doInBackground(String... params) {
             return mDao.returnById(params[0]);
+        }
+    }
+
+    private static class returnUnreadContact extends AsyncTask<Void, Void, List<DatabaseContacts>> {
+
+        private LiveDatabaseContactsDao mDao;
+
+        returnUnreadContact(LiveDatabaseContactsDao dao) {
+            this.mDao = dao;
+        }
+
+        @Override
+        protected List<DatabaseContacts> doInBackground(Void... params) {
+            return mDao.getAllWithUnread();
         }
     }
 

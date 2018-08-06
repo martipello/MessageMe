@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.internal.BottomNavigationItemView;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -33,8 +35,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -91,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static String userId;
     private String usersNumber;
     public Pubnub mPubNub;
+    public int unread = 0;
     private String stdByChannel;
     private final int PERMISSION_REQUEST_CONTACT = 120;
     private static final int LOADER_MAIN = 440;
@@ -109,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private Bundle mySavedInstanceState;
     private UserViewModel userViewModel;
     private DatabaseUser user;
+    private BottomNavigationView bottomNavigationView;
+    private boolean isBadgeVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 });
             }
         }
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -226,8 +233,48 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, fragment, tag);
-        fragmentTransaction.commitAllowingStateLoss()
-        ;
+        fragmentTransaction.commitAllowingStateLoss();
+    }
+
+    public void setBadge(){
+        Log.d(TAG, "child count " + bottomNavigationView.getChildCount());
+        if (getUnreadCount() > 0){
+            isBadgeVisible = true;
+            BottomNavigationMenuView bottomNavigationMenuView =
+                    (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
+            View v = bottomNavigationMenuView.getChildAt(0);
+            BottomNavigationItemView itemView = (BottomNavigationItemView) v;
+            View badge = LayoutInflater.from(this)
+                    .inflate(R.layout.bottom_nav_badge_count, bottomNavigationMenuView, false);
+            TextView badgeText = badge.findViewById(R.id.notification_badge);
+            if (getUnreadCount() > 9){
+                badgeText.setText(getUnreadCount());
+            }else{
+                badgeText.setText(String.valueOf(getUnreadCount()));
+            }
+            itemView.addView(badge);
+        }else{
+            if (isBadgeVisible)
+                 removeBadge();
+        }
+
+    }
+
+    public void removeBadge() {
+        BottomNavigationMenuView bottomNavigationMenuView = (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
+        View v = bottomNavigationMenuView.getChildAt(0);
+
+        BottomNavigationItemView itemView = (BottomNavigationItemView) v;
+        itemView.removeViewAt(itemView.getChildCount()-1);
+    }
+
+    public int getUnreadCount(){
+        return unread;
+    }
+
+    public void setUnreadCount(int mUnread){
+        this.unread = mUnread;
+        setBadge();
     }
 
     private void saveToDatabase(DatabaseContacts contact) {

@@ -17,6 +17,7 @@ import java.util.List;
 public class CallsViewModel extends AndroidViewModel{
     private CallsRepository callsRepository;
     private LiveData<List<DatabaseCalls>> call;
+    private LiveData<List<CallObject>> callsWithImage;
     private MutableLiveData<String> name;
     private String mUserId;
 
@@ -24,9 +25,13 @@ public class CallsViewModel extends AndroidViewModel{
         super(application);
         callsRepository = new CallsRepository(application);
         name = new MutableLiveData<>();
-        call = callsRepository.getAllCalls();
-        call = Transformations.switchMap(name, id ->
-                callsRepository.getCallsByName(id));
+        //call = callsRepository.getAllCalls();
+        callsWithImage = Transformations.switchMap(name, id ->
+                callsRepository.getCallsWithImageByName(id));
+    }
+
+    public LiveData<List<CallObject>> getLiveCallsWithImagesList(){
+        return callsWithImage;
     }
 
     public LiveData<List<DatabaseCalls>> getAllCalls(){

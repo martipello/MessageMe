@@ -58,6 +58,7 @@
     <string name="checked_contacts_progress">Checking contact %d of %d\n%d contacts found"</string>
     <string name="no_connection">Please enable your Internet Connection, and swipe down to check again</string>
     <string name="no_conversations">No Conversations</string>
+    <string name="no_unread">No Unread</string>
     <string name="no_calls">No Calls</string>
     <string name="no_status">No Status</string>
     <string name="incoming_call">Incoming Call</string>
@@ -137,5 +138,7 @@
     <string name="call_missed">Call missed</string>
     <string name="call_made">Call made</string>
     <string name="call_received">Call received</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 
 </resources>

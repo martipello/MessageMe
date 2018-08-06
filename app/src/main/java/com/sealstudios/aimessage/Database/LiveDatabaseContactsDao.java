@@ -8,6 +8,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Dao
@@ -18,8 +19,11 @@ public interface LiveDatabaseContactsDao {
     @Insert
     void insertMultipleContacts(List<DatabaseContacts> users);
 
-    @Query("SELECT * FROM databasecontacts ORDER BY msg_time_stamp ASC")
+    @Query("SELECT * FROM databasecontacts ORDER BY msg_time_stamp ASC,unread ASC ")
     LiveData<List<DatabaseContacts>> getAll();
+
+    @Query("SELECT * FROM databasecontacts WHERE unread > 0 ORDER BY msg_time_stamp ASC,unread ASC ")
+    List<DatabaseContacts> getAllWithUnread();
 
     @Query("SELECT * FROM databasecontacts ORDER BY user_time_stamp ASC")
     LiveData<List<DatabaseContacts>> getAllByStatus();
@@ -27,7 +31,7 @@ public interface LiveDatabaseContactsDao {
     @Query("SELECT * FROM databasecontacts WHERE user_id IN (:userIds)")
     LiveData<List<DatabaseContacts>> loadAllByIds(String[] userIds);
 
-    @Query("SELECT * FROM databasecontacts WHERE user_name LIKE :name ORDER BY user_name")
+    @Query("SELECT * FROM databasecontacts WHERE user_name LIKE :name ORDER BY user_time_stamp ASC")
     LiveData<List<DatabaseContacts>> findByName(String name);
 
     @Query("SELECT * FROM databasecontacts WHERE user_number = :number")

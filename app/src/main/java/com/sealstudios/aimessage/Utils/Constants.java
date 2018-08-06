@@ -9,8 +9,8 @@ public class Constants {
     public static final String CALL_USER_NAME    = "aimessage.SHARED_PREFS.CALL_USER_NAME";
     public static final String STDBY_SUFFIX = "-stdby";
 //constnats for video calls
-    public static final String PUB_KEY = "pub-key"; // Your Pub Key
-    public static final String SUB_KEY = "sub-key"; // Your Sub Key
+    public static final String PUB_KEY = ""; // Your Pub Key
+    public static final String SUB_KEY = ""; // Your Sub Key
 
     public static final String JSON_CALL_USER_ID = "call_user_id";
     public static final String JSON_CALL_USER_NAME = "call_user_name";
@@ -117,4 +117,6 @@ public class Constants {
 
 
     public static final String APP_PROVIDER = "com.sealstudios.aimessage.provider";
+    public static final String LAUNCH_ACTIVITY = "com.sealstudios.messageme.openActivity";
+    public static final String DONT_LAUNCH_ACTIVITY = "com.sealstudios.messageme.doNotOpenActivity";
 }

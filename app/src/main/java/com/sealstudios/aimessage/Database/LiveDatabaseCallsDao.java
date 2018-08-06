@@ -35,6 +35,10 @@ public interface LiveDatabaseCallsDao {
     @Query("SELECT * FROM databasecalls ORDER BY call_time_stamp ASC")
     LiveData<List<CallObject>> loadCallsWithImages();
 
+    @Transaction
+    @Query("SELECT * FROM databasecalls WHERE call_caller_name LIKE :name  OR call_called_name LIKE :name ORDER BY call_time_stamp")
+    LiveData<List<CallObject>> loadCallsWithImagesByName(String name);
+
     @Update
     void updateCall(DatabaseCalls calls);
 

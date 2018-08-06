@@ -65,7 +65,7 @@ public class CallsFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.calls_list_view);
         results = rootView.findViewById(R.id.results);
         userId = MainActivity.userId;
-        mSearchString = "";
+        mSearchString = "%%";
         smallContainer = rootView.findViewById(R.id.small_container);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         ContactsActivity.OnItemTouchListener itemTouchListener = new ContactsActivity.OnItemTouchListener() {
@@ -113,7 +113,8 @@ public class CallsFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
         callsViewModel = ViewModelProviders.of(this).get(CallsViewModel.class);
-        callsViewModel.getCallsWithImage().observe(this, new Observer<List<CallObject>>() {
+        callsViewModel.setUserName(mSearchString);
+        callsViewModel.getLiveCallsWithImagesList().observe(this, new Observer<List<CallObject>>() {
             @Override
             public void onChanged(@Nullable List<CallObject> databaseCalls) {
                 ArrayList<CallObject> tempList = new ArrayList<>();
@@ -144,7 +145,7 @@ public class CallsFragment extends Fragment {
 
 
     private void searchDatabase(String searchString) {
-        callsViewModel.setUserName(searchString);
+        callsViewModel.setUserName("%" + searchString.trim() + "%");
     }
 
     @Override

@@ -94,10 +94,10 @@ public class LiveContactsAdapter extends RecyclerView.Adapter<LiveContactsAdapte
         DatabaseContacts userObject = contactList.get(position);
         holder.contact_name.setText(userObject.getUser_name());
         if (userObject.getUser_recent_message()!= null){
-            holder.recent_time.setText(getSmsTodayYestFromMilli(userObject.getMsg_time_stamp().getTime()));
+            holder.recent_time.setText(getTimeDate(userObject.getMsg_time_stamp().getTime()));
             holder.contact_status.setText(userObject.getUser_recent_message());
         }else{
-            holder.recent_time.setText(getSmsTodayYestFromMilli(userObject.getUser_time_stamp().getTime()));
+            holder.recent_time.setText(getTimeDate(userObject.getUser_time_stamp().getTime()));
             holder.contact_status.setText(userObject.getUser_status());
         }
 
@@ -124,7 +124,7 @@ public class LiveContactsAdapter extends RecyclerView.Adapter<LiveContactsAdapte
         notifyItemChanged(position);
     }
 
-    private String getSmsTodayYestFromMilli(long msgTimeMillis) {
+    private String getTimeDate(long msgTimeMillis) {
 
         Calendar messageTime = Calendar.getInstance();
         messageTime.setTimeInMillis(msgTimeMillis);

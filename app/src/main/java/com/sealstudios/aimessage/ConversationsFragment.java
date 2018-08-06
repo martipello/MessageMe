@@ -1,8 +1,10 @@
 package com.sealstudios.aimessage;
 
 import android.app.SearchManager;
+import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,11 +26,12 @@ import android.widget.TextView;
 import com.sealstudios.aimessage.Database.DatabaseContacts;
 import com.sealstudios.aimessage.Utils.Constants;
 import com.sealstudios.aimessage.ViewModels.ContactsViewModel;
+import com.sealstudios.aimessage.Widget.MessageMeAppWidget;
 import com.sealstudios.aimessage.adapters.LiveContactsAdapter;
-import com.sealstudios.aimessage.adapters.LiveContactsStatusAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ConversationsFragment extends Fragment {
     private RecyclerView recyclerView;
@@ -61,7 +64,6 @@ public class ConversationsFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.contacts_list_view);
         results = rootView.findViewById(R.id.results);
         userId = MainActivity.userId;
-        mSearchString = "";
         smallContainer = rootView.findViewById(R.id.small_container);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         ContactsActivity.OnItemTouchListener itemTouchListener = new ContactsActivity.OnItemTouchListener() {
@@ -75,7 +77,6 @@ public class ConversationsFragment extends Fragment {
                 i.putExtras(b);
                 startActivity(i);
             }
-
             @Override
             public void onCardLongClick(View view, int position) {
             }
@@ -91,17 +92,36 @@ public class ConversationsFragment extends Fragment {
         contactsAdapter = new LiveContactsAdapter(databaseContactsArrayList, getActivity(), itemTouchListener, imageTouchListener);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(contactsAdapter);
+        mSearchString = "%%";
         contactViewModel = ViewModelProviders.of(this).get(ContactsViewModel.class);
-        contactViewModel.getAllContacts().observe(this, new Observer<List<DatabaseContacts>>() {
+        contactViewModel.setUserName(mSearchString);
+        contactViewModel.getLiveContactList().observe(this, new Observer<List<DatabaseContacts>>() {
             @Override
             public void onChanged(@Nullable List<DatabaseContacts> databaseContacts) {
                 ArrayList<DatabaseContacts> tempList = new ArrayList<>();
+                int unread = 0;
                 tempList.addAll(databaseContacts);
                 contactsAdapter.refreshMyList(tempList);
                 if (tempList.size() < 1) {
                     results.setVisibility(View.VISIBLE);
                 } else {
                     results.setVisibility(View.GONE);
+                    for (DatabaseContacts databaseContacts1 : tempList){
+                        if (databaseContacts1.getUnread() > 0){
+                            unread += databaseContacts1.getUnread();
+                        }
+                    }
+                    ((MainActivity) Objects.requireNonNull(getActivity())).setUnreadCount(unread);
+                    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getActivity().getApplicationContext());
+                    Intent intent = new Intent(getActivity().getApplicationContext(), MessageMeAppWidget.class);
+                    intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                    int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(getActivity().getApplication(),MessageMeAppWidget.class));
+                    appWidgetManager.notifyAppWidgetViewDataChanged(ids,R.id.widget_list);
+                    //intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                    //sendBroadcast(intent);
+                    for (int id : ids){
+                        MessageMeAppWidget.updateAppWidget(getActivity().getApplicationContext(),appWidgetManager,id);
+                    }
                 }
             }
         });
@@ -118,6 +138,10 @@ public class ConversationsFragment extends Fragment {
         return rootView;
     }
 
+    private void setUnread(){
+
+    }
+
     private void showEditDialog(String userId, String contactId) {
         FragmentManager fm = getActivity().getSupportFragmentManager();
         ContactPreviewFragment contactPreviewFragment = ContactPreviewFragment.newInstance(userId, contactId);
@@ -126,7 +150,7 @@ public class ConversationsFragment extends Fragment {
 
 
     private void searchDatabase(String searchString) {
-        contactViewModel.setUserName(searchString);
+        contactViewModel.setUserName("%"+searchString+"%");
     }
 
     @Override

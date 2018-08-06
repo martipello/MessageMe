@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
+import android.util.Log;
 
 import com.sealstudios.aimessage.Database.ContactRepository;
 import com.sealstudios.aimessage.Database.DatabaseContacts;
@@ -23,11 +24,20 @@ public class ContactsViewModel extends AndroidViewModel{
 
     public ContactsViewModel(Application application){
         super(application);
+        this.name = new MutableLiveData<>();
         contactRepository = new ContactRepository(application);
         name = new MutableLiveData<>();
         contacts = contactRepository.getAllContacts();
         contacts = Transformations.switchMap(name, id ->
                 contactRepository.getContactByName(id));
+    }
+
+    public LiveData<List<DatabaseContacts>> getLiveContactList(){
+        return contacts;
+    }
+
+    public List<DatabaseContacts> getLiveUnreadContactList(){
+        return contactRepository.getAllWithUnread();
     }
 
     public LiveData<List<DatabaseContacts>> getAllContacts(){
@@ -41,6 +51,7 @@ public class ContactsViewModel extends AndroidViewModel{
     public void setUserName(String userName) {
         if (userName != null)
             this.name.setValue(userName);
+        Log.d("CntcVwMdl","name data " + name.getValue());
     }
 
     public void removeListener(){
@@ -48,6 +59,7 @@ public class ContactsViewModel extends AndroidViewModel{
     }
 
     public LiveData<List<DatabaseContacts>> getContactByName(String name){
+        Log.d("CntcVwMdl","get contact by name called");
         return  contactRepository.getContactByName(name);
     }
 

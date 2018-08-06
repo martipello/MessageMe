@@ -20,9 +20,44 @@
 
     <style name="ThemeOverlay.MyTitleText" parent="AppTheme">
         <item name="android:gravity">center</item>
-        <item name="android:textSize">36sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/title_text_size</item>
     </style>
 
     <!-- Dark Buttons -->
+
+    <style name="ThemeOverlay.MyBodyText" parent="AppTheme">
+        <item name="android:textSize">@dimen/body_text_size</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:textColorLink">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="ThemeOverlay.ParagraphText" parent="AppTheme">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:textColorLink">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="ThemeOverlay.ViewHolderTitleText" parent="AppTheme">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+
+    <style name="ThemeOverlay.ViewHolderBodyText" parent="AppTheme">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/textSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.ViewHolderContactTitleText" parent="AppTheme">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+
+    <style name="ThemeOverlay.ViewHolderContactBodyText" parent="AppTheme">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/textSecondary</item>
+    </style>
 
 </resources>

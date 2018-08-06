@@ -2,13 +2,13 @@ package com.sealstudios.aimessage;
 
 import android.app.NotificationManager;
 import android.app.RemoteInput;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,16 +17,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.sealstudios.aimessage.Database.DatabaseMessage;
-import com.sealstudios.aimessage.Database.LiveDatabaseBuilder;
 import com.sealstudios.aimessage.Database.LiveDatabaseMessagesDao;
 import com.sealstudios.aimessage.Database.LiveDbOpenHelper;
 import com.sealstudios.aimessage.Database.MessageRepository;
 import com.sealstudios.aimessage.Utils.Constants;
+import com.sealstudios.aimessage.Widget.MessageMeAppWidget;
 
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class ReplyReceiver extends BroadcastReceiver {
     Context mContext;
@@ -67,10 +64,6 @@ public class ReplyReceiver extends BroadcastReceiver {
                 validateMessage(createMessage(replyText.toString(),senderId,recipientId,senderName,recipientName));
                 int notificationId = createIdFromId(recipientId);
                 getManager(context).cancel(notificationId);
-                messageRepository.markAllAsRead(senderId,recipientId);
-                //message = createMessage(replyText.toString(),senderId,recipientId,senderName,recipientName);
-                //MyFirebaseMessagingService.messages.add(message);
-                //MyFirebaseMessagingService.sendNotification(context,message,"");
             }
         }
     }
@@ -122,6 +115,18 @@ public class ReplyReceiver extends BroadcastReceiver {
                         Toast.makeText(mContext, R.string.blocked_user, Toast.LENGTH_SHORT).show();
                     } else {
                         messageRepository.insertMessageOnline(userMessage);
+                        //TODO this should be either markAllAsRead(recipientId,senderId); or markAllAsRead(senderId,recipientId);
+                        messageRepository.markAllAsRead(senderId,recipientId);
+                        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+                        Intent widgetIntent = new Intent(mContext.getApplicationContext(), MessageMeAppWidget.class);
+                        widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(mContext.getApplicationContext(),MessageMeAppWidget.class));
+                        appWidgetManager.notifyAppWidgetViewDataChanged(ids,R.id.widget_list);
+                        //intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                        //sendBroadcast(intent);
+                        for (int id : ids){
+                            MessageMeAppWidget.updateAppWidget(mContext.getApplicationContext(),appWidgetManager,id);
+                        }
                     }
                 }
             }
