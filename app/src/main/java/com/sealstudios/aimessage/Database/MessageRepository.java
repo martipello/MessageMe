@@ -349,7 +349,7 @@ public class MessageRepository {
             message.put(Constants.MSG_RECIPIENT_NAME, userMessage.getRecipientName());
             message.put(Constants.MSG_SENT_RECEIVED, userMessage.getSent_received());
             //set message to sender refs firestore database
-            ///this will force an update tp room and show our message with no image
+            ///this will force an update to room and show our message with no image
             messageSenderRef.document(userMessage.getMessageId()).set(message)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

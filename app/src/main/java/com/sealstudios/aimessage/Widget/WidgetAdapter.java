@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.FutureTarget;
 import com.sealstudios.aimessage.Database.ContactRepository;
@@ -19,7 +18,6 @@ import com.sealstudios.aimessage.Database.DatabaseContacts;
 import com.sealstudios.aimessage.R;
 import com.sealstudios.aimessage.Utils.Constants;
 import com.sealstudios.aimessage.Utils.GlideApp;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;

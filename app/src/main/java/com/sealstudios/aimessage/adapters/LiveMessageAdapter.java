@@ -7,6 +7,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -137,12 +138,16 @@ public class LiveMessageAdapter extends RecyclerView.Adapter<LiveMessageAdapter.
                     return VIEW_TYPE_MESSAGE_SENT;
             }else if (message.getData_type().equals(Constants.DATA_TYPE_CALL)){
                     return VIEW_TYPE_CALL_SENT;
+            }else if (message.getData_type().equals(Constants.DATA_TYPE_IMAGE)){
+                return VIEW_TYPE_MESSAGE_SENT;
             }
         } else {
             if (message.getData_type().equals(Constants.DATA_TYPE_TEXT)){
                     return VIEW_TYPE_MESSAGE_RECEIVED;
             }else if (message.getData_type().equals(Constants.DATA_TYPE_CALL)){
                     return VIEW_TYPE_CALL_RECEIVED;
+            }else if (message.getData_type().equals(Constants.DATA_TYPE_IMAGE)){
+                return VIEW_TYPE_MESSAGE_SENT;
             }
         }
         return VIEW_TYPE_MESSAGE_RECEIVED;
@@ -191,6 +196,7 @@ public class LiveMessageAdapter extends RecyclerView.Adapter<LiveMessageAdapter.
         final DatabaseMessage userMessage = messageList.get(position);
         holder.statusImage.setVisibility(View.GONE);
         holder.message_text.setVisibility(View.VISIBLE);
+        holder.message_text.setText("");
         holder.dateHolder.setVisibility(View.GONE);
         holder.time_stamp.setVisibility(View.VISIBLE);
         holder.shapeOfView.setVisibility(View.GONE);
@@ -222,7 +228,10 @@ public class LiveMessageAdapter extends RecyclerView.Adapter<LiveMessageAdapter.
                 holder.dateHolder.setVisibility(View.GONE);
                 holder.bigDateText.setText("");
             } else {
+                //TODO this flat doesnt work think up a new way maybe where a new item is inserted into the list with the date and date holder
                 dateCheck = userMessage.getTime_stamp();
+                holder.dateHolder.setVisibility(View.VISIBLE);
+                holder.bigDateText.setText(getTextDateHolder(dateCheck.getTime()));
             }
             if (timesAreEqual(messageTime, dateCheckTime)) {
                 holder.time_stamp.setVisibility(View.GONE);
@@ -243,6 +252,7 @@ public class LiveMessageAdapter extends RecyclerView.Adapter<LiveMessageAdapter.
         //message is an image
         if (userMessage.getData_type().equals(Constants.DATA_TYPE_IMAGE)) {
             holder.shapeOfView.setVisibility(View.VISIBLE);
+            holder.message_text.setText(userMessage.getMessage());
             Glide.with(context)
                     .load(userMessage.getData_url())
                     .apply(new RequestOptions()
@@ -379,27 +389,18 @@ public class LiveMessageAdapter extends RecyclerView.Adapter<LiveMessageAdapter.
     }
 
     private boolean timesAreEqual(Calendar dateCheckTime, Calendar messageTime) {
-        boolean areEqual = false;
-        if (dateCheckTime.get(Calendar.DATE) == messageTime.get(Calendar.DATE)
-                && ((dateCheckTime.get(Calendar.MONTH) == messageTime.get(Calendar.MONTH)))
-                && ((dateCheckTime.get(Calendar.YEAR) == messageTime.get(Calendar.YEAR)))
-                && (dateCheckTime.get(Calendar.HOUR) == messageTime.get(Calendar.HOUR))
-                && dateCheckTime.get(Calendar.MINUTE) == messageTime.get(Calendar.MINUTE)) {
-            //make sure this is gone if they are the same
-            areEqual = true;
-        }
-        return areEqual;
+
+        return dateCheckTime.get(Calendar.DAY_OF_MONTH) == messageTime.get(Calendar.DAY_OF_MONTH)
+                && dateCheckTime.get(Calendar.MONTH) == messageTime.get(Calendar.MONTH)
+                && dateCheckTime.get(Calendar.YEAR) == messageTime.get(Calendar.YEAR)
+                && dateCheckTime.get(Calendar.HOUR) == messageTime.get(Calendar.HOUR)
+                && dateCheckTime.get(Calendar.MINUTE) == messageTime.get(Calendar.MINUTE);
     }
 
 
     private boolean datesAreEqual(Calendar messageTime, Calendar dateCheckTime) {
-        boolean areEqual = false;
-        if (dateCheckTime.get(Calendar.DATE) == messageTime.get(Calendar.DATE)
-                && ((dateCheckTime.get(Calendar.MONTH) == messageTime.get(Calendar.MONTH)))
-                && ((dateCheckTime.get(Calendar.YEAR) == messageTime.get(Calendar.YEAR)))) {
-            //make sure this is gone if they are the same
-            areEqual = true;
-        }
-        return areEqual;
+        return dateCheckTime.get(Calendar.DAY_OF_MONTH) == messageTime.get(Calendar.DAY_OF_MONTH) &&
+                dateCheckTime.get(Calendar.MONTH) == messageTime.get(Calendar.MONTH) &&
+                dateCheckTime.get(Calendar.YEAR) == messageTime.get(Calendar.YEAR);
     }
 }

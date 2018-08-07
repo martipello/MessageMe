@@ -121,7 +121,7 @@ public class NotificationActivity extends AppCompatActivity {
                                 if (userMessage.getMessage().length() < 1) {
                                     Toast.makeText(NotificationActivity.this, R.string.message_not_sent, Toast.LENGTH_SHORT).show();
                                 } else {
-                                    messagesViewModel.insertMessage(userMessage);
+                                    messagesViewModel.insertMessageOnline(userMessage);
                                 }
                                 break;
                             case Constants.DATA_TYPE_IMAGE:

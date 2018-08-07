@@ -22,6 +22,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewCompat;
@@ -306,7 +307,13 @@ public class MessageListActivity extends AppCompatActivity {
                 .build(messageText);
     }
 
-    private DatabaseMessage createMessage(String message_Text, String dataType) {
+    private void showImagePreviewMessageDialog(String messageText, Uri imageUri) {
+        FragmentManager fm = getSupportFragmentManager();
+        ImagePreviewMessage imagePreviewMessage = ImagePreviewMessage.newInstance(messageText, imageUri);
+        imagePreviewMessage.show(fm, "fragment_picture_message");
+    }
+
+    public DatabaseMessage createMessage(String message_Text, String dataType) {
         Calendar cal = Calendar.getInstance();
         DatabaseMessage databaseMessage = new DatabaseMessage();
         databaseMessage.setMessageId(cal.getTime().toString());
@@ -360,11 +367,12 @@ public class MessageListActivity extends AppCompatActivity {
         */
     }
 
-    private void validateMessage(DatabaseMessage userMessage, Uri imageUri) {
+    public void validateMessage(DatabaseMessage userMessage, Uri imageUri) {
         //check if text is 0
         //check if there is an image or text etc
         //check if user is allowed to send this message to the recipient
         //check if user is in the recipient contact and if not add them
+        Log.d("VldMsg","data type " + userMessage.getData_type() + " senderid " + userMessage.getSenderId());
         if (recipientUser.getBlocked()) {
             Snackbar.make(mMessageRecycler, R.string.blocked_user, Snackbar.LENGTH_LONG).show();
         } else {
@@ -744,7 +752,6 @@ public class MessageListActivity extends AppCompatActivity {
     private void blockUser() {
         //check if user is blocked assign this to a boolean
         boolean blocked = recipientUser.getBlocked();
-        System.out.println("blocked is " + blocked);
         String title = !blocked ? getString(R.string.block) : getString(R.string.unblock);
         String content = !blocked ? getString(R.string.confirm_block) : getString(R.string.confirm_unblock);
         new MaterialDialog.Builder(MessageListActivity.this)
@@ -817,13 +824,15 @@ public class MessageListActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == TAKE_PICTURE_REQUEST && resultCode == Activity.RESULT_OK) {
-            validateMessage(createMessage(messageText.getText().toString(), Constants.DATA_TYPE_IMAGE), cameraUri);
+            //validateMessage(createMessage(messageText.getText().toString(), Constants.DATA_TYPE_IMAGE), cameraUri);
+            showImagePreviewMessageDialog(messageText.getText().toString(),cameraUri);
         } else if (resultCode == Activity.RESULT_CANCELED) {
             // User Cancelled the action
         }
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
-            validateMessage(createMessage(messageText.getText().toString(), Constants.DATA_TYPE_IMAGE), uri);
+            //validateMessage(createMessage(messageText.getText().toString(), Constants.DATA_TYPE_IMAGE), uri);
+            showImagePreviewMessageDialog(messageText.getText().toString(),uri);
         }
 
     }
