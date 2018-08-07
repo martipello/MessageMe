@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'message_me_key'
-            keyPassword '360Flip360'
-            storePassword '360Flip360'
-            storeFile file('C:/keys/aimessage_release.jks')
+            keyAlias ''
+            keyPassword ''
+            storePassword ''
+            storeFile file('')
         }
     }
     compileSdkVersion 27
